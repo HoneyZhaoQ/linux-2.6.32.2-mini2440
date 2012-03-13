@@ -49,6 +49,7 @@ static irqreturn_t buttons_interrupt(int irq, void *dev_id)
     // udelay(0);
     down = !s3c2410_gpio_getpin(button_irqs->pin);
 
+    //printk(DEVICE_NAME "::button[%d] : %d\n", button_irqs->number, '0' + down);
     if (down != (key_values[button_irqs->number] & 1)) { // Changed
 
 	key_values[button_irqs->number] = '0' + down;
@@ -154,8 +155,21 @@ static struct miscdevice misc = {
 static int __init dev_init(void)
 {
 	int ret;
+	int down;
+	int i;
 
 	ret = misc_register(&misc);
+
+	// get initial values
+	for (i = 0; i < sizeof(key_values) / sizeof(key_values[0]); i++) {
+                if (button_irqs[i].irq < 0)
+			continue;
+
+		down = !s3c2410_gpio_getpin(button_irqs[i].pin);
+
+		printk(DEVICE_NAME "::button[%d] = %d\n", i, down);
+		key_values[button_irqs->number] = '0' + down;
+	}
 
 	printk (DEVICE_NAME"\tinitialized\n");
 
