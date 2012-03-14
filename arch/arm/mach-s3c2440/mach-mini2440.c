@@ -293,17 +293,27 @@ static struct mtd_partition friendly_arm_default_nand_part[] = {
 	[2] = {
 		.name	= "Kernel",
 		.offset = 0x00060000,
-		.size	= 0x00500000,
+		.size	= 0x00500000, // kernel partition 5M
 	},
 	[3] = {
-		.name	= "root",
+		.name	= "recovery",
 		.offset = 0x00560000,
-		.size	= 1024 * 1024 * 1024, //
+		.size	= 0x15e00000, // recovery partition 350M
 	},
 	[4] = {
+		.name	= "rootfs",
+		.offset = 0x16360000,
+		.size	= 0x15e00000, // rootfs partition 350M
+	},
+	[5] = {
+		.name	= "var",
+		.offset = 0x2c160000,
+		.size	= 0x13ea0000, // var partition 320M
+	},
+	[6] = {
 		.name	= "nand",
 		.offset = 0x00000000,
-		.size	= 1024 * 1024 * 1024, //
+		.size	= 1024 * 1024 * 1024, // whole nand flash
 	}
 };
 
