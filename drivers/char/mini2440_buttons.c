@@ -167,8 +167,8 @@ static int __init dev_init(void)
 
 		down = !s3c2410_gpio_getpin(button_irqs[i].pin);
 
-		printk(DEVICE_NAME "::button[%d] = %d\n", i, down);
-		key_values[button_irqs->number] = '0' + down;
+		key_values[i] = '0' + down;
+		printk(DEVICE_NAME "::button[%d] = %c\n", i, key_values[i]);
 	}
 
 	printk (DEVICE_NAME"\tinitialized\n");
