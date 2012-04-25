@@ -114,7 +114,7 @@ config LEDS_MINI2440
 
 config MINI2440_BUTTONS
 	tristate "Buttons driver for FriendlyARM Mini2440 development boards"
-	depends on MACH_MINI2440
+	depends on MACH_MINI2440 && !SUFA1_RESET
 	default y if MACH_MINI2440
 	help
 	  this is buttons driver for FriendlyARM Mini2440 development boards
@@ -133,6 +133,13 @@ config MINI2440_ADC
 	help
 	  this is ADC driver for FriendlyARM Mini2440 development boards
 	  Notes: the touch-screen-driver required this option
+
+config SUFA1_RESET
+	bool "Sufa1 reset pin driver for FriendlyARM Mini2440 development boards"
+	depends on MACH_MINI2440
+	default y if MACH_MINI2440
+	help
+	  this is a driver for FriendlyARM Mini2440 development boards
 
 config BFIN_JTAG_COMM
 	tristate "Blackfin JTAG Communication"

@@ -117,6 +117,7 @@ obj-$(CONFIG_MINI2440_HELLO_MODULE) += mini2440_hello_module.o
 obj-$(CONFIG_MINI2440_BUTTONS)	+= mini2440_buttons.o
 obj-$(CONFIG_MINI2440_BUZZER)	+= mini2440_pwm.o
 obj-$(CONFIG_MINI2440_ADC)	+= mini2440_adc.o
+obj-$(CONFIG_SUFA1_RESET)       += sufa1_reset.o
 
 # Files generated that shall be removed upon make clean
 clean-files := consolemap_deftbl.c defkeymap.c
