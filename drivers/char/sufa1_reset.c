@@ -1,78 +1,95 @@
+
+/*
+    this module is used to reset sufa over mini2440
+    reset gpio pin is GPG0 pin
+
+    when init register to device "/dev/sreset"
+
+    to reset sufa use echo on linux user space:
+        "echo -n 1 > /dev/sreset"
+        "echo -n 0 > /dev/sreset"
+*/
+
+
 #include <linux/miscdevice.h>
-#include <linux/delay.h>
-#include <asm/irq.h>
 #include <mach/regs-gpio.h>
-#include <mach/hardware.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/init.h>
-#include <linux/mm.h>
 #include <linux/fs.h>
 #include <linux/types.h>
-#include <linux/delay.h>
-#include <linux/moduleparam.h>
-#include <linux/slab.h>
 #include <linux/errno.h>
-#include <linux/ioctl.h>
-#include <linux/cdev.h>
-#include <linux/string.h>
-#include <linux/list.h>
-#include <linux/pci.h>
 #include <linux/gpio.h>
 #include <asm/uaccess.h>
-#include <asm/atomic.h>
-#include <asm/unistd.h>
-
 
 #define DEVICE_NAME "sreset"
 
-static int sufa1_reset_ioctl(
-	struct inode *inode, 
-	struct file *file, 
-	unsigned int cmd, 
-	unsigned long arg)
+
+/* no need to do anything */
+int sufa1_reset_open(struct inode *inode, struct file *filp) 
 {
-	switch(cmd) {
-	case 0:
-	case 1:
-		s3c2410_gpio_setpin(S3C2410_GPB(0), !cmd);
-		return 0;
-	default:
-		return -EINVAL;
-	}
+  return 0;
+}
+
+/* no need to do anything */
+int sufa1_reset_release(struct inode *inode, struct file *filp) 
+{
+  return 0;
+}
+
+ssize_t sufa1_reset_write( struct file *filp, char *buf, 
+  size_t count, loff_t *f_pos)
+{
+    char pcVal[2] = {'\0'};
+    int iCmd = 0;
+
+    copy_from_user(pcVal, buf, 1);
+
+    iCmd = (unsigned int)simple_strtol(pcVal, NULL, 10);
+    if (iCmd != 0 && iCmd != 1)
+        return -EINVAL;
+
+    printk(DEVICE_NAME "\twrite value: %d\n", iCmd);
+    s3c2410_gpio_setpin(S3C2410_GPG(0), !iCmd);
+
+    return 1;
 }
 
 static struct file_operations dev_fops = {
-	.owner	=	THIS_MODULE,
-	.ioctl	=	sufa1_reset_ioctl,
+    .owner  = THIS_MODULE,
+    .open   = sufa1_reset_open,
+    .release= sufa1_reset_release,
+    .write  = sufa1_reset_write,
 };
 
 static struct miscdevice misc = {
-	.minor = MISC_DYNAMIC_MINOR,
-	.name = DEVICE_NAME,
-	.fops = &dev_fops,
+    .minor = MISC_DYNAMIC_MINOR,
+    .name  = DEVICE_NAME,
+    .fops  = &dev_fops,
 };
 
 static int __init dev_init(void)
 {
-	int ret;
+    int ret;
 
-	s3c2410_gpio_cfgpin(S3C2410_GPB(0), S3C2410_GPIO_OUTPUT);
-	s3c2410_gpio_setpin(S3C2410_GPB(0), 0);
+    s3c2410_gpio_cfgpin(S3C2410_GPG(0), S3C2410_GPIO_OUTPUT);
+    s3c2410_gpio_setpin(S3C2410_GPG(0), 0);
 
-	ret = misc_register(&misc);
+    ret = misc_register(&misc);
 
-	printk (DEVICE_NAME"\tinitialized\n");
+    printk (DEVICE_NAME "\tinitialized\n");
 
-	return ret;
+    return ret;
 }
 
 static void __exit dev_exit(void)
 {
-	misc_deregister(&misc);
+    printk (DEVICE_NAME "\tmodule exit\n");
+    misc_deregister(&misc);
 }
 
 module_init(dev_init);
 module_exit(dev_exit);
+
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Tamara Elektronik Ltd.Sti.");
