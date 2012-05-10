@@ -6,7 +6,9 @@
     when init register to device "/dev/sreset"
 
     to reset sufa use echo on linux user space:
+        # to reset
         "echo -n 1 > /dev/sreset"
+        # to release
         "echo -n 0 > /dev/sreset"
 */
 
@@ -73,7 +75,7 @@ static int __init dev_init(void)
     int ret;
 
     s3c2410_gpio_cfgpin(S3C2410_GPG(0), S3C2410_GPIO_OUTPUT);
-    s3c2410_gpio_setpin(S3C2410_GPG(0), 0);
+    s3c2410_gpio_setpin(S3C2410_GPG(0), 1);
 
     ret = misc_register(&misc);
 
