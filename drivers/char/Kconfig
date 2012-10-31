@@ -114,7 +114,7 @@ config LEDS_MINI2440
 
 config MINI2440_BUTTONS
 	tristate "Buttons driver for FriendlyARM Mini2440 development boards"
-	depends on MACH_MINI2440 && SUFA1_RESET=n
+	depends on MACH_MINI2440
 	default y if MACH_MINI2440
 	help
 	  this is buttons driver for FriendlyARM Mini2440 development boards
